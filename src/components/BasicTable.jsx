@@ -1,10 +1,11 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import mData from '../MOCK_DATA.json';
 import {
   flexRender,
   getCoreRowModel,
   useReactTable,
   getPaginationRowModel,
+  getSortedRowModel,
 } from '@tanstack/react-table';
 import { DateTime } from 'luxon';
 
@@ -43,11 +44,17 @@ const columns = [
 
 export const BasicTable = () => {
   const data = useMemo(() => mData, []);
+  const [sorting, setSorting] = useState([]);
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    state: {
+      sorting: sorting,
+    },
+    onSortingChange: setSorting,
   });
 
   return (
@@ -57,11 +64,20 @@ export const BasicTable = () => {
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <th key={header.id}>
+                <th
+                  key={header.id}
+                  onClick={header.column.getToggleSortingHandler()}
+                >
                   {flexRender(
                     header.column.columnDef.header,
                     header.getContext()
                   )}
+                  {
+                    {
+                      asc: '🔼',
+                      desc: '🔽',
+                    }[header.column.getIsSorted() ?? null]
+                  }
                 </th>
               ))}
             </tr>
@@ -79,7 +95,7 @@ export const BasicTable = () => {
           ))}
         </tbody>
       </table>
-      <div style={{ paddingTop: '10px'}}>
+      <div style={{ paddingTop: '10px' }}>
         <button onClick={() => table.setPageIndex(0)}>First page</button>
         <button
           disabled={!table.getCanPreviousPage()}
