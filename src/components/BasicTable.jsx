@@ -4,6 +4,7 @@ import {
   flexRender,
   getCoreRowModel,
   useReactTable,
+  getPaginationRowModel,
 } from '@tanstack/react-table';
 import { DateTime } from 'luxon';
 
@@ -46,6 +47,7 @@ export const BasicTable = () => {
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
   });
 
   return (
@@ -77,6 +79,24 @@ export const BasicTable = () => {
           ))}
         </tbody>
       </table>
+      <div style={{ paddingTop: '10px'}}>
+        <button onClick={() => table.setPageIndex(0)}>First page</button>
+        <button
+          disabled={!table.getCanPreviousPage()}
+          onClick={() => table.previousPage()}
+        >
+          Previous page
+        </button>
+        <button
+          disabled={!table.getCanNextPage()}
+          onClick={() => table.nextPage()}
+        >
+          Next page
+        </button>
+        <button onClick={() => table.setPageIndex(table.getPageCount() - 1)}>
+          Last page
+        </button>
+      </div>
     </div>
   );
 };
