@@ -6,6 +6,7 @@ import {
   useReactTable,
   getPaginationRowModel,
   getSortedRowModel,
+  getFilteredRowModel,
 } from '@tanstack/react-table';
 import { DateTime } from 'luxon';
 
@@ -45,20 +46,29 @@ const columns = [
 export const BasicTable = () => {
   const data = useMemo(() => mData, []);
   const [sorting, setSorting] = useState([]);
+  const [filtering, setFiltering] = useState('');
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     state: {
       sorting: sorting,
+      globalFilter: filtering,
     },
     onSortingChange: setSorting,
+    onGlobalFilterChange: setFiltering,
   });
 
   return (
     <div>
+      <input
+        type="text"
+        name={filtering}
+        onChange={(e) => setFiltering(e.target.value)}
+      />
       <table>
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
